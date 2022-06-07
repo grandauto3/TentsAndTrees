@@ -4,9 +4,7 @@
 
 int main()
 {
-	App app;
-
-	app.Run();
+	App::Get().Run();
 
 	return 0;
 }

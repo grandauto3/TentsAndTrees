@@ -7,13 +7,13 @@ enum class TileType;
 class Tile
 {
 public:
-	explicit Tile(TileType inType)
-		: type(inType)
-	{
-	}
+	Tile(TileType inType, sf::Vector2i inPosition);
 
 	[[nodiscard]]
-	ResourceManager::TexturePtr GetTexture() const;
+	std::unique_ptr<sf::Sprite>& GetSprite()
+	{
+		return sprite;
+	}
 
 	[[nodiscard]]
 	TileType GetType() const
@@ -26,13 +26,7 @@ public:
 		type = inType;
 	}
 
-	[[nodiscard]]
-	sf::Vector2i GetPosition() const
-	{
-		return position;
-	}
-
 private:
-	sf::Vector2i position;
 	TileType type;
+	std::unique_ptr<sf::Sprite> sprite;
 };

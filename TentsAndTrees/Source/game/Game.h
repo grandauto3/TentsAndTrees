@@ -1,6 +1,10 @@
 #pragma once
 
+#include <array>
+#include <functional>
 #include <SFML/Graphics.hpp>
+
+#include "Tile.h"
 #include "../core/Definitions.h"
 
 class Grid;
@@ -29,17 +33,21 @@ public:
 	void Input();
 	void Update();
 	void ProcessEvents(sf::Event event);
-	void Draw();
+	void Draw() const;
 
 
 private:
 	void SwapTile(sf::Vector2i pos, TileType nextTile);
 
-	std::unique_ptr<Grid> grid = nullptr;
+	typedef std::function<void(std::int32_t, std::int32_t)> IteratorFunction;
+
+	void IterateOverGrid(const IteratorFunction& inFunction) const;
+
+	std::array<std::array<std::unique_ptr<Tile>, GRID_SIZE>, GRID_SIZE> grid = {};
+
 
 	WindowPtr& window;
 	sf::RectangleShape background;
-	sf::Sprite** gridSprite_ptr = nullptr;
 
 	bool prevMouseButton = false;
 

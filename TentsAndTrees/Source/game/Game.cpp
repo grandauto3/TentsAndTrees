@@ -1,5 +1,9 @@
 #include "Game.h"
+
+#include <iostream>
+
 #include "Grid.h"
+#include "Tile.h"
 
 
 /////////////////////////////////////////////////////
@@ -9,8 +13,18 @@
 
 void Game::Init()
 {
-	grid = std::make_unique<Grid>(GRID_SIZE, gridLayout);
-	gridSprite_ptr = grid->GetSpriteArray();
+	IterateOverGrid([this](std::int32_t x, std::int32_t y)
+	{
+		const std::int32_t index = x + y;
+
+		TileType tmpTileType;
+		if (!(index & 1))
+			tmpTileType = TileType::Tree;
+		else
+			tmpTileType = TileType::Unknown;
+
+		grid[x][y] = std::make_unique<Tile>(tmpTileType, sf::Vector2i(x, y));
+	});
 }
 
 void Game::Start()
@@ -29,54 +43,51 @@ void Game::Input()
 	/////////////////////////////////////////////////////
 	if (currMouseButton && !prevMouseButton)
 	{
-		for (int x = 0; x < GRID_SIZE; x++)
+		IterateOverGrid([this](std::int32_t x, std::int32_t y)
 		{
-			for (int y = 0; y < GRID_SIZE; y++)
+			const std::unique_ptr<Tile>& currentTile = grid[x][y];
+			if (currentTile->GetSprite()->getGlobalBounds().contains(
+				static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window))))
 			{
-				if (gridSprite_ptr[x][y].getGlobalBounds().contains(
-					static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window))))
+				//Console Output
+				std::cout << "Hit at: X " << x + 1 << " Y " << y + 1 << std::endl;
+
+				switch (currentTile->GetType())
 				{
+					case TileType::None:
+						//Console Output
+						std::cout << "None" << std::endl;
+						break;
+					case TileType::Tree:
+						//Console Output
+						std::cout << "Tree" << std::endl;
+						break;
+					case TileType::Grass:
+
+						SwapTile(sf::Vector2i(x, y), TileType::Tent);
+
 					//Console Output
-					std::cout << "Hit at: X " << x + 1 << " Y" << y + 1 << std::endl;
+						std::cout << "Grass" << std::endl;
+						break;
+					case TileType::Tent:
 
-					TileType state = grid->GetTileAtPosition(x, y);
-					switch (state)
-					{
-						case TileType::None:
-							//Console Output
-							std::cout << "None" << std::endl;
-							break;
-						case TileType::Tree:
-							//Console Output
-							std::cout << "Tree" << std::endl;
-							break;
-						case TileType::Grass:
+						SwapTile(sf::Vector2i(x, y), TileType::Grass);
 
-							SwapTile(sf::Vector2i(x, y), TileType::Tent);
+					//Console Output
+						std::cout << "Tent" << std::endl;
+						break;
+					case TileType::Unknown:
 
-						//Console Output
-							std::cout << "Grass" << std::endl;
-							break;
-						case TileType::Tent:
+						SwapTile(sf::Vector2i(x, y), TileType::Grass);
 
-							SwapTile(sf::Vector2i(x, y), TileType::Grass);
-
-						//Console Output
-							std::cout << "Tent" << std::endl;
-							break;
-						case TileType::Unknown:
-
-							SwapTile(sf::Vector2i(x, y), TileType::Grass);
-
-						//Console Output
-							std::cout << "Unkown" << std::endl;
-							break;
-						default:
-							break;
-					}
+					//Console Output
+						std::cout << "Unknown" << std::endl;
+						break;
+					default:
+						break;
 				}
 			}
-		}
+		});
 	}
 
 	/////////////////////////////////////////////////////
@@ -99,28 +110,22 @@ void Game::Input()
 
 void Game::Update()
 {
-	//Update Grid
-	grid->Update();
-	gridSprite_ptr = grid->GetSpriteArray();
 }
 
 void Game::ProcessEvents(sf::Event e)
 {
 }
 
-void Game::Draw()
+void Game::Draw() const
 {
 	//Background
 	window->draw(background);
 
 	//Grid
-	for (int x = 0; x < GRID_SIZE; x++)
+	IterateOverGrid([this](std::int32_t x, std::int32_t y)
 	{
-		for (int y = 0; y < GRID_SIZE; y++)
-		{
-			window->draw(gridSprite_ptr[x][y]);
-		}
-	}
+		window->draw(*grid[x][y]->GetSprite());
+	});
 }
 
 Game::~Game()
@@ -133,5 +138,15 @@ Game::~Game()
 
 void Game::SwapTile(sf::Vector2i pos, TileType nextTile)
 {
-	grid->SwitchTile(pos, nextTile);
+}
+
+void Game::IterateOverGrid(const IteratorFunction& inFunction) const
+{
+	for (std::int32_t x = 0; x < GRID_SIZE; ++x)
+	{
+		for (std::int32_t y = 0; y < GRID_SIZE; ++y)
+		{
+			inFunction(x, y);
+		}
+	}
 }

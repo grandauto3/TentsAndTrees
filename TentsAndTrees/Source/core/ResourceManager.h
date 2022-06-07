@@ -29,6 +29,8 @@ private:
 		std::string Unknown = "Resources/Textures/Tiles/UnknownTile.png";
 	} resource_paths;
 
+	ResourceManager();
+
 	//Textures
 	TexturePtr grass_texture;
 	TexturePtr tree_texture;
