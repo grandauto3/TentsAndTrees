@@ -1,13 +1,10 @@
 #pragma once
 
-#include <array>
-#include <functional>
+#include "Grid.h"
 #include <SFML/Graphics.hpp>
 
-#include "Tile.h"
 #include "../core/Definitions.h"
 
-class Grid;
 
 class Game
 {
@@ -37,15 +34,7 @@ public:
 
 
 private:
-	void SwapTile(sf::Vector2i pos, TileType nextTile);
-
-	typedef std::function<void(std::int32_t, std::int32_t)> IteratorFunction;
-
-	void IterateOverGrid(const IteratorFunction& inFunction) const;
-
-	std::array<std::array<std::unique_ptr<Tile>, GRID_SIZE>, GRID_SIZE> grid = {};
-
-
+	std::unique_ptr<Grid> grid;
 	WindowPtr& window;
 	sf::RectangleShape background;
 

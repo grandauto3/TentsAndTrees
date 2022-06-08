@@ -1,7 +1,7 @@
 #include "Tile.h"
 
 
-Tile::Tile(TileType inType, sf::Vector2i inPosition)
+Tile::Tile(TileType inType, const sf::Vector2i& inPosition)
 	: type(inType),
 	  sprite(std::make_unique<sf::Sprite>(*ResourceManager::Get().GetTexture(type)))
 {
@@ -15,4 +15,9 @@ Tile::Tile(TileType inType, sf::Vector2i inPosition)
 		(SCREEN_WIDTH / 10) + spriteSize.y * static_cast<float>(inPosition.y) + offset.y);
 
 	sprite->setPosition(tmpPosition);
+}
+
+void Tile::UpdateSprite(TileType newType) const
+{
+	sprite->setTexture(*ResourceManager::Get().GetTexture(newType));
 }

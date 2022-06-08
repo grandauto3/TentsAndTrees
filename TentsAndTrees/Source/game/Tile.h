@@ -7,7 +7,7 @@ enum class TileType;
 class Tile
 {
 public:
-	Tile(TileType inType, sf::Vector2i inPosition);
+	Tile(TileType inType, const sf::Vector2i& inPosition);
 
 	[[nodiscard]]
 	std::unique_ptr<sf::Sprite>& GetSprite()
@@ -24,9 +24,11 @@ public:
 	void SetType(TileType inType)
 	{
 		type = inType;
+		UpdateSprite(inType);
 	}
 
 private:
-	TileType type;
-	std::unique_ptr<sf::Sprite> sprite;
+	TileType type = TileType::None;
+	std::unique_ptr<sf::Sprite> sprite = nullptr;
+	void UpdateSprite(TileType newType) const;
 };

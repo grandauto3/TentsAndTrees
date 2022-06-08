@@ -21,6 +21,7 @@ public:
 	TexturePtr GetTexture(TileType type);
 
 private:
+	ResourceManager();
 	struct TexturePaths
 	{
 		std::string Grass = "Resources/Textures/Tiles/GrassTile.png";
@@ -29,11 +30,13 @@ private:
 		std::string Unknown = "Resources/Textures/Tiles/UnknownTile.png";
 	} resource_paths;
 
-	ResourceManager();
+
 
 	//Textures
 	TexturePtr grass_texture;
 	TexturePtr tree_texture;
 	TexturePtr tent_texture;
 	TexturePtr unknown_texture;
+	[[nodiscard]]
+	std::string DebugString(const std::string& inName, bool successful) const;
 };
